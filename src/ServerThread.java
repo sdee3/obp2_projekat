@@ -12,7 +12,7 @@ public class ServerThread implements Runnable {
 
     public ServerThread(Socket socket) {
         this.socket = socket;
-        this.vremeDoPorudzbine = new Random().nextInt(40) + 10;
+        this.vremeDoPorudzbine = 0;
 
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -27,10 +27,9 @@ public class ServerThread implements Runnable {
     public void run() {
         while(true){
             try {
-                String request = in.readLine();
-                request = request.replace('\t', '\n');
+                String request = in.readLine().replace('\t', '\n');
                 System.out.println(request);
-
+                vremeDoPorudzbine = new Random().nextInt(40) + 10;
                 out.println("Vreme do isporučenja Vaše porudžbine: " + vremeDoPorudzbine + " minuta.");
 
                 new BrojacThread(vremeDoPorudzbine, request).run();
