@@ -10,7 +10,7 @@ public class Server extends JFrame implements Runnable{
     private static JLabel preostaloVremeLabel;
     private static JPanel[] jPaneli;
 
-    private static int vremeDoPorudzbine, brojacPanela;
+    private static int brojacPanela;
 
     public Server(){
         setTitle("Mokranjatzz 365 Pizza - Serverska aplikacija");
@@ -34,44 +34,47 @@ public class Server extends JFrame implements Runnable{
             ServerSocket serverSocket = new ServerSocket(9000);
             System.out.println("Server pokrenut...");
             while (true)
-                new ServerThread(serverSocket.accept()).run();
+                new ServerThread(serverSocket.accept()).start();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static synchronized void azurirajFrejm(String porudzbina, String preostaloMinuta) {
+    public static synchronized void azurirajFrejm(String porudzbina, int preostaloVremeUSek) throws InterruptedException {
+        while (preostaloVremeUSek > 0){
+            JPanel tmpPanel = new JPanel();
+            tmpPanel.setLayout(new GridLayout(1,2));
 
-        JPanel tmpPanel = new JPanel();
-        tmpPanel.setLayout(new GridLayout(1,2));
+            porudzbinaTextArea = new JTextArea(porudzbina);
+            preostaloVremeLabel = new JLabel(String.valueOf(preostaloVremeUSek / 60));
+            preostaloVremeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            preostaloVremeLabel.setFont(new Font("Arial", Font.BOLD, 36));
+            preostaloVremeLabel.setForeground(Color.GREEN);
 
-        porudzbinaTextArea = new JTextArea(porudzbina);
-        preostaloVremeLabel = new JLabel(preostaloMinuta);
-        preostaloVremeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        preostaloVremeLabel.setFont(new Font("Arial", Font.BOLD, 36));
-        preostaloVremeLabel.setForeground(Color.GREEN);
+            tmpPanel.add(porudzbinaTextArea);
+            tmpPanel.add(preostaloVremeLabel);
 
-        tmpPanel.add(porudzbinaTextArea);
-        tmpPanel.add(preostaloVremeLabel);
+            tmpPanel.setName(porudzbina);
 
-        tmpPanel.setName(porudzbina);
+            if(brojacPanela > 0 && tmpPanel.getName().equals(jPaneli[brojacPanela - 1].getName())) {
+                container.remove(jPaneli[brojacPanela - 1]);
+                jPaneli[brojacPanela - 1] = tmpPanel;
+                container.add(jPaneli[brojacPanela - 1]);
 
-        if(brojacPanela > 0 && tmpPanel.getName().equals(jPaneli[brojacPanela - 1].getName())) {
-            container.remove(jPaneli[brojacPanela - 1]);
-            jPaneli[brojacPanela - 1] = tmpPanel;
-            container.add(jPaneli[brojacPanela - 1]);
+                container.revalidate();
+            }
+            else{
+                jPaneli[brojacPanela].setName(porudzbina);
+                jPaneli[brojacPanela] = tmpPanel;
+                container.add(jPaneli[brojacPanela++]);
 
-            container.revalidate();
+                container.revalidate();
+            }
+
+            preostaloVremeUSek--;
+            Thread.sleep(10);
         }
-        else{
-            jPaneli[brojacPanela].setName(porudzbina);
-            jPaneli[brojacPanela] = tmpPanel;
-            container.add(jPaneli[brojacPanela++]);
-
-            container.revalidate();
-        }
-
     }
 
     private static void generisiFrejmove() {
@@ -81,9 +84,6 @@ public class Server extends JFrame implements Runnable{
         }
     }
 
-    public static void main(String[] args) {
-        Server server = new Server();
-    }
-
+    public static void main(String[] args) { Server server = new Server(); }
 
 }

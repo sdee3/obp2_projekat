@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Random;
 
-public class ServerThread implements Runnable {
+public class ServerThread extends Thread {
 
     private Socket socket;
     private BufferedReader in;
@@ -25,18 +25,20 @@ public class ServerThread implements Runnable {
 
     @Override
     public void run() {
-        while(true){
+         while (true){
             try {
                 String request = in.readLine().replace('\t', '\n');
                 System.out.println(request);
                 vremeDoPorudzbine = new Random().nextInt(40) + 10;
+                int vremeDoPorudzbineUSek = vremeDoPorudzbine * 60;
                 out.println("Vreme do isporučenja Vaše porudžbine: " + vremeDoPorudzbine + " minuta.");
 
-                new BrojacThread(vremeDoPorudzbine, request).run();
+                if((vremeDoPorudzbineUSek % 60 == 0 || vremeDoPorudzbineUSek % 60 == 59 ) && vremeDoPorudzbineUSek > 0)
+                    Server.azurirajFrejm(request, vremeDoPorudzbineUSek);
 
-            } catch (IOException e1) {
+            } catch (IOException | InterruptedException e1) {
                 e1.printStackTrace();
             }
-        }
+         }
     }
 }
