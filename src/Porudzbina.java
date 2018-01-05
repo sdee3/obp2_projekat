@@ -50,12 +50,12 @@ public class Porudzbina {
 
     public String toString(){
         return  "Vrsta pice: " + this.vrstaPice +
-                "\nVeličina pice: " + this.velicinaPice +
-                "\nDodaci: " + this.dodaci +
-                "\nIme i prezime: " + this.imePrezime +
-                "\nAdresa: " + this.adresa +
-                "\nBroj telefona: " + this.brojTelefona +
-                "\nNačin plaćanja: " + this.nacinPlacanja +
-                "\nNapomena: " + this.napomena;
+                "\tVeličina pice: " + this.velicinaPice +
+                "\tDodaci: " + this.dodaci +
+                "\tIme i prezime: " + this.imePrezime +
+                "\tAdresa: " + this.adresa +
+                "\tBroj telefona: " + this.brojTelefona +
+                "\tNačin plaćanja: " + this.nacinPlacanja +
+                "\tNapomena: " + this.napomena;
     }
 }

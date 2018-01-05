@@ -2,82 +2,88 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Random;
 
 public class Server extends JFrame implements Runnable{
-    private Container container;
-    private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
+    private static Container container;
 
-    private JTextArea porudzbinaTextArea;
-    private JLabel preostaloVremeLabel;
+    private static JTextArea porudzbinaTextArea;
+    private static JLabel preostaloVremeLabel;
+    private static JPanel[] jPaneli;
 
-    private int vremeDoPorudzbine;
-    private Random random;
+    private static int vremeDoPorudzbine, brojacPanela;
 
     public Server(){
         setTitle("Mokranjatzz 365 Pizza - Serverska aplikacija");
-        setSize(600,600);
+        setSize(600,700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridLayout(5,2));
         container = getContentPane();
 
-        random = new Random();
+        jPaneli = new JPanel[5];
+        brojacPanela = 0;
+
+        generisiFrejmove();
         setVisible(true);
-        konekcija();
 
         run();
-    }
-
-    private void konekcija() {
-        try {
-            ServerSocket serverSocket = new ServerSocket(9000);
-            System.out.println("Server pokrenut...");
-
-            Socket socket = serverSocket.accept();
-            this.socket = socket;
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter
-                    (socket.getOutputStream())), true);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
     }
 
     @Override
     public void run() {
         try {
-            String request = in.readLine();
-            System.out.println(request);
-            vremeDoPorudzbine = random.nextInt(40) + 10;
-            int vremeDoPorudzbineUSek = vremeDoPorudzbine * 60;
-            out.println("Vreme do isporučenja Vaše porudžbine: " + vremeDoPorudzbine);
+            ServerSocket serverSocket = new ServerSocket(9000);
+            System.out.println("Server pokrenut...");
+            while (true)
+                new ServerThread(serverSocket.accept()).run();
 
-            while (vremeDoPorudzbineUSek > 0){
-                vremeDoPorudzbineUSek--;
-                Thread.sleep(1000);
-                azurirajFrame(request, String.valueOf(vremeDoPorudzbineUSek / 60));
-            }
-
-            in.close();
-            out.close();
-            socket.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private void azurirajFrame(String porudzbina, String preostaloMinuta) {
+    public static synchronized void azurirajFrejm(String porudzbina, String preostaloMinuta) {
+
+        JPanel tmpPanel = new JPanel();
+        tmpPanel.setLayout(new GridLayout(1,2));
+
         porudzbinaTextArea = new JTextArea(porudzbina);
         preostaloVremeLabel = new JLabel(preostaloMinuta);
+        preostaloVremeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        preostaloVremeLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        preostaloVremeLabel.setForeground(Color.GREEN);
 
-        container.add(porudzbinaTextArea);
-        container.add(preostaloVremeLabel);
+        tmpPanel.add(porudzbinaTextArea);
+        tmpPanel.add(preostaloVremeLabel);
+
+        tmpPanel.setName(porudzbina);
+
+        if(brojacPanela > 0 && tmpPanel.getName().equals(jPaneli[brojacPanela - 1].getName())) {
+            container.remove(jPaneli[brojacPanela - 1]);
+            jPaneli[brojacPanela - 1] = tmpPanel;
+            container.add(jPaneli[brojacPanela - 1]);
+
+            container.revalidate();
+        }
+        else{
+            jPaneli[brojacPanela].setName(porudzbina);
+            jPaneli[brojacPanela] = tmpPanel;
+            container.add(jPaneli[brojacPanela++]);
+
+            container.revalidate();
+        }
+
+    }
+
+    private static void generisiFrejmove() {
+        for(int i=0;i<5;i++){
+            jPaneli[i] = new JPanel();
+            jPaneli[i].setLayout(new GridLayout(1,2));
+        }
     }
 
     public static void main(String[] args) {
         Server server = new Server();
     }
+
+
 }

@@ -124,10 +124,10 @@ public class Klijent extends JFrame implements ActionListener{
         if(e.getSource().equals(velicinaPice))
             if(velicinaPice.getSelectedIndex() != 0)
                 porudzbina.setVelicinaPice(velicinaPice.getSelectedItem().toString());
-        else if(e.getSource().equals(vrstaPice))
+        if(e.getSource().equals(vrstaPice))
             if(vrstaPice.getSelectedIndex() != 0)
                 porudzbina.setVrstaPice(vrstaPice.getSelectedItem().toString());
-        else if(e.getSource().equals(nacinPlacanja))
+        if(e.getSource().equals(nacinPlacanja))
             if(nacinPlacanja.getSelectedIndex() != 0)
                 porudzbina.setNacinPlacanja(nacinPlacanja.getSelectedItem().toString());
         // Dugme naruči
@@ -178,14 +178,14 @@ public class Klijent extends JFrame implements ActionListener{
 
     private void posaljiPorudzbinuServeru() {
         try {
-            s = new Socket(InetAddress.getByName("localhost"), 9000);
+            s = new Socket(InetAddress.getByName("127.0.0.1"), 9000);
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream())), true);
         } catch (IOException e1) {
             JOptionPane.showMessageDialog(this, "Greška pri konekciji!");
         }
-
-        out.print(porudzbina);
+        System.out.println("Šalje se sledeća porudžbina: \n" + porudzbina);
+        out.println(porudzbina);
         try {
             String odgovor = in.readLine();
             JOptionPane.showMessageDialog(this, odgovor);
