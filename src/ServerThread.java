@@ -4,20 +4,21 @@ import java.util.Random;
 
 public class ServerThread extends Thread {
 
-    private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private Server instanca;
 
-    private int vremeDoPorudzbine;
+    private int vremeDoPorudzbine, indeksTekucePorudzbine;
 
-    public ServerThread(Socket socket) {
-        this.socket = socket;
+    ServerThread(Socket s, Server instanca, int indeksTekucePorudzbine) {
         this.vremeDoPorudzbine = 0;
+        this.indeksTekucePorudzbine = indeksTekucePorudzbine;
+        this.instanca = instanca;
 
         try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter
-                    (socket.getOutputStream())), true);
+                    (s.getOutputStream())), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -34,8 +35,7 @@ public class ServerThread extends Thread {
                 out.println("Vreme do isporučenja Vaše porudžbine: " + vremeDoPorudzbine + " minuta.");
 
                 if((vremeDoPorudzbineUSek % 60 == 0 || vremeDoPorudzbineUSek % 60 == 59 ) && vremeDoPorudzbineUSek > 0)
-                    Server.azurirajFrejm(request, vremeDoPorudzbineUSek);
-
+                    instanca.azurirajFrejm(request, vremeDoPorudzbineUSek, indeksTekucePorudzbine);
             } catch (IOException | InterruptedException e1) {
                 e1.printStackTrace();
             }

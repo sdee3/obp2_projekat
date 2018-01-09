@@ -2,7 +2,7 @@ public class Porudzbina {
     private String velicinaPice, vrstaPice, adresa, nacinPlacanja, imePrezime,
         brojTelefona, napomena, dodaci;
 
-    public Porudzbina(){
+    Porudzbina(){
         this.adresa = "";
         this.brojTelefona = "";
         this.imePrezime = "";
@@ -50,11 +50,11 @@ public class Porudzbina {
 
     public String toString(){
         return  "Vrsta pice: " + this.vrstaPice +
-                "\tVeličina pice: " + this.velicinaPice +
-                "\tDodaci: " + this.dodaci +
+                ", Veličina pice: " + this.velicinaPice +
+                ", Dodaci: " + this.dodaci +
                 "\tIme i prezime: " + this.imePrezime +
-                "\tAdresa: " + this.adresa +
-                "\tBroj telefona: " + this.brojTelefona +
+                ", Adresa: " + this.adresa +
+                ", Broj telefona: " + this.brojTelefona +
                 "\tNačin plaćanja: " + this.nacinPlacanja +
                 "\tNapomena: " + this.napomena;
     }

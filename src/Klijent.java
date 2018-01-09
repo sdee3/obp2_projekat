@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Objects;
 
 public class Klijent extends JFrame implements ActionListener{
 
@@ -16,8 +17,6 @@ public class Klijent extends JFrame implements ActionListener{
     private JMenuBar jMenuBar;
     private JMenu meniProgram;
 
-    private boolean flagGreska;
-    private Socket s;
     private BufferedReader in;
     private PrintWriter out;
 
@@ -31,19 +30,16 @@ public class Klijent extends JFrame implements ActionListener{
         setLayout(new GridLayout(5, 2));
 
         porudzbina = new Porudzbina();
-        flagGreska = true;
 
         generisiKomponente();
         dodajKomponente();
-
-        konekcijaSaServerom();
 
         setVisible(true);
     }
 
     private void konekcijaSaServerom() {
         try {
-            s = new Socket(InetAddress.getByName("127.0.0.1"), 9000);
+            Socket s = new Socket(InetAddress.getByName("127.0.0.1"), 9000);
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream())), true);
         } catch (IOException e1) {
@@ -135,13 +131,13 @@ public class Klijent extends JFrame implements ActionListener{
         // Prva tri ComboBox-a
         if(e.getSource().equals(velicinaPice))
             if(velicinaPice.getSelectedIndex() != 0)
-                porudzbina.setVelicinaPice(velicinaPice.getSelectedItem().toString());
+                porudzbina.setVelicinaPice(Objects.requireNonNull(velicinaPice.getSelectedItem()).toString());
         if(e.getSource().equals(vrstaPice))
             if(vrstaPice.getSelectedIndex() != 0)
-                porudzbina.setVrstaPice(vrstaPice.getSelectedItem().toString());
+                porudzbina.setVrstaPice(Objects.requireNonNull(vrstaPice.getSelectedItem()).toString());
         if(e.getSource().equals(nacinPlacanja))
             if(nacinPlacanja.getSelectedIndex() != 0)
-                porudzbina.setNacinPlacanja(nacinPlacanja.getSelectedItem().toString());
+                porudzbina.setNacinPlacanja(Objects.requireNonNull(nacinPlacanja.getSelectedItem()).toString());
         // Dugme naruči
         if(e.getActionCommand().equals("Naruči")){
             if(velicinaPice.getSelectedIndex() == 0 || vrstaPice.getSelectedIndex() == 0
@@ -150,25 +146,23 @@ public class Klijent extends JFrame implements ActionListener{
             }
             if(imePrezime.getText().trim().length() < 5){
                 prikaziError("Ime i prezime mora biti validno!");
-                flagGreska = true;
             }
             else if(adresa.getText().trim().length() < 8){
                 prikaziError("Adresa koju unosite mora biti validna!");
-                flagGreska = true;
             }
 
             else if(brojTelefona.getText().trim().length() < 9) {
                 prikaziError("Broj telefona koji unosite mora biti validan!");
-                flagGreska = true;
             }
             else if(imePrezime.getText().trim().length() >= 5 && brojTelefona.getText().trim().length() >= 9
                     && adresa.getText().trim().length() >= 8){
-                flagGreska = false;
 
                 porudzbina.setAdresa(adresa.getText().trim());
                 porudzbina.setImePrezime(imePrezime.getText().trim());
                 porudzbina.setBrojTelefona(brojTelefona.getText().trim());
                 porudzbina.setNapomena(napomena.getText().trim());
+
+                konekcijaSaServerom();
 
                 prikaziPotvrdu();
                 posaljiPorudzbinuServeru();
@@ -210,7 +204,5 @@ public class Klijent extends JFrame implements ActionListener{
         JOptionPane.showMessageDialog(this, label);
     }
 
-    public static void main(String[] args) {
-        Klijent klijent = new Klijent();
-    }
+    public static void main(String[] args) { new Klijent(); }
 }
