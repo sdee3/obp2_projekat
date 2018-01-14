@@ -2,24 +2,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 
 
 public class Server extends JFrame implements Runnable{
     private static Container container;
 
-    private static JPanel[] jPaneliTekucePorudzbine, jPaneliGotovePorudzbine;
+    private static ArrayList<JPanel> jPaneliTekucePorudzbine = new ArrayList<>(5),
+            jPaneliGotovePorudzbine = new ArrayList<>(5);
 
     private static int indeksTekucePorudzbine, indeksGotovePorudzbine;
 
     public Server(){
         setTitle("Mokranjatzz 365 Pizza - Serverska aplikacija");
-        setSize(750,1000);
+        setSize(1000,1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridLayout(12,1));
         container = getContentPane();
 
-        jPaneliTekucePorudzbine = new JPanel[5];
-        jPaneliGotovePorudzbine = new JPanel[5];
         indeksTekucePorudzbine = 0;
         indeksGotovePorudzbine = 0;
 
@@ -68,49 +68,49 @@ public class Server extends JFrame implements Runnable{
             tmpPanel.add(porudzbinaTextArea);
             tmpPanel.add(preostaloVremeLabel);
 
-            tmpPanel.setName(porudzbina);
-
             rekreirajFrejmove(preostaloVremeUSek, indeksTekucePorudzbine, tmpPanel);
 
             preostaloVremeUSek-=5;
-            Thread.sleep(20);
+            Thread.sleep(50);
         }
     }
 
-    private synchronized void rekreirajFrejmove(int preostaloVremeUSek, int indeksTekucePorudzbine, JPanel tmpPanel) {
+    private void rekreirajFrejmove(int preostaloVremeUSek, int indeksTekucePorudzbine, JPanel tmpPanel) {
         container.removeAll();
         container.revalidate();
 
-        if(preostaloVremeUSek < 10)
-            jPaneliGotovePorudzbine[indeksGotovePorudzbine++] = tmpPanel;
+        if(preostaloVremeUSek < 10){
+            jPaneliGotovePorudzbine.set(indeksGotovePorudzbine++, tmpPanel);
+            jPaneliTekucePorudzbine.set(indeksTekucePorudzbine, new JPanel());
+        }
         else
-            jPaneliTekucePorudzbine[indeksTekucePorudzbine] = tmpPanel;
+            jPaneliTekucePorudzbine.set(indeksTekucePorudzbine, tmpPanel);
 
         container.add(new JLabel("Tekuće porudžbine:"));
-        for(int i=0;i<5;i++)
-            container.add(jPaneliTekucePorudzbine[i]);
+        for (JPanel panel : jPaneliTekucePorudzbine)
+            container.add(panel);
 
         container.add(new JLabel("Isporučene porudžbine:"));
-        for(int i=0;i<5;i++)
-            container.add(jPaneliGotovePorudzbine[i]);
+        for(JPanel panel : jPaneliGotovePorudzbine)
+            container.add(panel);
 
         container.revalidate();
     }
 
     private static void generisiFrejmove() {
         for(int i=0;i<5;i++){
-            jPaneliTekucePorudzbine[i] = new JPanel();
-            jPaneliGotovePorudzbine[i] = new JPanel();
-            jPaneliTekucePorudzbine[i].setLayout(new GridLayout(1,2));
-            jPaneliGotovePorudzbine[i].setLayout(new GridLayout(1,2));
+            jPaneliTekucePorudzbine.add(new JPanel());
+            jPaneliGotovePorudzbine.add(new JPanel());
+            jPaneliTekucePorudzbine.get(i).setLayout(new GridLayout(1,2));
+            jPaneliGotovePorudzbine.get(i).setLayout(new GridLayout(1,2));
         }
 
         container.add(new JLabel("Tekuće porudžbine:"));
-        for(int i=0;i<5;i++)
-            container.add(jPaneliTekucePorudzbine[i]);
+        for(JPanel panel : jPaneliTekucePorudzbine)
+            container.add(panel);
         container.add(new JLabel("Isporučene porudžbine:"));
-        for(int i=0;i<5;i++)
-            container.add(jPaneliGotovePorudzbine[i]);
+        for(JPanel panel : jPaneliGotovePorudzbine)
+            container.add(panel);
 
         container.revalidate();
     }
