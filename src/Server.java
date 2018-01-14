@@ -90,7 +90,7 @@ public class Server extends JFrame implements Runnable{
         for (JPanel panel : jPaneliTekucePorudzbine)
             container.add(panel);
 
-        container.add(new JLabel("Isporučene porudžbine:"));
+        container.add(new JLabel("Poslednjih 5 isporučenih porudžbina:"));
         for(JPanel panel : jPaneliGotovePorudzbine)
             container.add(panel);
 
@@ -105,7 +105,7 @@ public class Server extends JFrame implements Runnable{
             jPaneliGotovePorudzbine.get(i).setLayout(new GridLayout(1,2));
         }
 
-        container.add(new JLabel("Tekuće porudžbine:"));
+        container.add(new JLabel("Poslednjih 5 isporučenih porudžbina:"));
         for(JPanel panel : jPaneliTekucePorudzbine)
             container.add(panel);
         container.add(new JLabel("Isporučene porudžbine:"));
