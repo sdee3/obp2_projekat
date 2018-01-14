@@ -184,6 +184,7 @@ public class Klijent extends JFrame implements ActionListener{
 
     private void posaljiPorudzbinuServeru() {
         out.println(porudzbina);
+        porudzbina = new Porudzbina();
         try {
             String odgovor = in.readLine();
             JOptionPane.showMessageDialog(this, odgovor);
